@@ -34,6 +34,32 @@ class DistillationModel(nn.Module):
         return student_output, teacher_output
 
 
+class DistillationModelXrag(nn.Module):
+    def __init__(self, student, teacher):
+        super().__init__()
+        print("initializing xRAG distillation...")
+        self.student = student
+        self.teacher = teacher
+        self.teacher.eval()
+
+    def forward(self, student_input_ids, student_attention_mask, student_retrieval_embeds, student_labels, teacher_input_ids, teacher_attention_mask, teacher_retrieval_embeds, teacher_labels):
+        with torch.no_grad():
+            teacher_output = self.teacher(
+                input_ids=teacher_input_ids,
+                attention_mask=teacher_attention_mask,
+                labels=teacher_labels,
+                retrieval_embeds=teacher_retrieval_embeds
+            )
+
+        student_output = self.student(
+            input_ids=student_input_ids,
+            attention_mask=student_attention_mask,
+            labels=student_labels,
+            retrieval_embeds=student_retrieval_embeds
+        )
+        return student_output, teacher_output
+
+
 class DistillationLoss(nn.Module):
     def __init__(self, crossentropy_weight=1, distillation_weight=1, student_temperature=1, teacher_temperature=1, skip_student_eos=False, skip_teacher_eos=False, ignore_index=-100, debug=False, debug_rank=0, tokenizer_student=None, tokenizer_teacher=None):
         super().__init__()
