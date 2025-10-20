@@ -3,7 +3,7 @@ from datasets import load_dataset
 def tokenize_xrag(item, tokenizer):
     if tokenizer.name_or_path == "Hannibal046/xrag-7b":
         prompt = "[INST] Background: <xRAG>, which also means:[/INST]"
-    elif tokenizer.name_or_path == "google/gemma-3-1b-it":
+    elif tokenizer.name_or_path == "google/gemma-2-2b":
         prompt = "<start_of_turn>user\nBackground: <xRAG>, which also means:<end_of_turn>"
     
 
