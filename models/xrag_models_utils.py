@@ -38,6 +38,18 @@ def get_student_model():
 
     student_model = XGemmaForCausalLM.from_pretrained(student_model_name, config=config).to(device)
 
+    # Free all model except projector part
+    for param in student_model.parameters():
+        param.requires_grad = False
+
+    for param in student_model.projector.parameters():
+        param.requires_grad = True
+
+    print("Trainable parameters in student model:")
+    for name, param in student_model.named_parameters():
+        if param.requires_grad:
+            print(name)
+
     student_tokenizer = AutoTokenizer.from_pretrained(student_model_name)
     student_tokenizer.add_special_tokens({"additional_special_tokens": [XRAG_TOKEN]})
     
