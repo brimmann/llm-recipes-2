@@ -8,7 +8,7 @@ def tokenize_xrag(item, tokenizer):
     
 
     context_tokens = tokenizer.encode(f"{prompt}", add_special_tokens=False)
-    answer_tokens = tokenizer.encode(f"{item['generated_text']}", add_special_tokens=False)
+    answer_tokens = tokenizer.encode(f"{item['context']}", add_special_tokens=False)
 
     prompt_tokens = context_tokens+answer_tokens
     # print("len(prompt_tokens)", len(prompt_tokens))
