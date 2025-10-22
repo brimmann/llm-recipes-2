@@ -78,12 +78,12 @@ def load_model(train_config, rank):
     print_model_size(model, train_config, rank)
     return model
 
-def set_model(model, train_config, fsdp_config, rank, kwargs):
+def set_model(model, train_config, fsdp_config, rank):
     if train_config.quantization:
         model = prepare_model_for_int8_training(model)
 
     if train_config.use_peft:
-        peft_config = generate_peft_config(train_config, kwargs)
+        peft_config = generate_peft_config(train_config, None)
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
     elif train_config.freeze_layers:
@@ -115,19 +115,19 @@ def set_model(model, train_config, fsdp_config, rank, kwargs):
         else:
             return model.to(f"cuda:{rank}")
 
-def get_model(train_config, fsdp_config, rank, kwargs):
+def get_model(train_config, fsdp_config, rank):
     model = load_model(train_config, rank)
-    model = set_model(model, train_config, fsdp_config, rank, kwargs)
+    model = set_model(model, train_config, fsdp_config, rank)
     tokenizer = load_tokenizer(train_config.model_name, train_config.encoder_decoder)
     tokenizer.pad_token_id = tokenizer.eos_token_id
     return tokenizer, model
 
-def get_distillation_models(train_config, distil_config, fsdp_config, rank, kwargs):
-    student_tokenizer, student_model = get_model(train_config, fsdp_config, rank, kwargs)
+def get_distillation_models(train_config, distil_config, fsdp_config, rank):
+    student_tokenizer, student_model = get_model(train_config, fsdp_config, rank)
     
     teacher_fsdp_config = FSDP_CONFIG()
     update_config((teacher_fsdp_config), **dataclasses.asdict(distil_config))
-    teacher_tokenizer, teacher_model = get_model(distil_config, distil_config, rank, kwargs)
+    teacher_tokenizer, teacher_model = get_model(distil_config, distil_config, rank)
 
     return student_tokenizer, teacher_tokenizer, DistillationModel(student_model, teacher_model)
 
