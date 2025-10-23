@@ -70,6 +70,7 @@ def tokenize(item, tokenizer, encoder_decoder=False):
 
 def get_split(dataset_config, tokenizer, split):
     dataset = load_dataset("brimmann2/squad-v2-sampled4", split=split)
+    dataset = dataset.select(range(8))
     if dataset_config.training_size < 1: dataset = dataset.select(range(int(len(dataset)*dataset_config.training_size)))
     dataset = dataset.map(lambda item: tokenize(item, tokenizer, dataset_config.encoder_decoder), remove_columns=list(dataset.features))
     return dataset
