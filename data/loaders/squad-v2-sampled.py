@@ -23,6 +23,6 @@ def tokenize_xrag(item, tokenizer):
 
 def get_split(dataset_config, tokenizer, split):
     dataset = load_dataset("brimmann2/squad-v2-sampled", split=split)
-    dataset = dataset.select(range(8))
+    # dataset = dataset.select(range(8))
     dataset = dataset.map(lambda item: tokenize_xrag(item, tokenizer), remove_columns=list(dataset.features))
     return dataset
