@@ -67,7 +67,8 @@ def train(model, train_dataloader, eval_dataloader, optimizer, lr_scheduler, gra
     epoch_times = []
     checkpoint_times = []
     results = {}
-    steps_per_eval = len(eval_dataloader)
+    if train_config.run_validation:
+        steps_per_eval = len(eval_dataloader)
     steps_per_epoch = len(train_dataloader)
     best_val_loss = float("inf")
     for epoch in range(train_config.num_epochs):
